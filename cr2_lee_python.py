@@ -6,9 +6,9 @@ Created on Fri Jan 24 13:57:03 2020
 """
 
 import pandas as pd
+# import numpy as np
 from zipfile import ZipFile
 
-# import numpy as np
 
 entrada_dir = ('D:/GIT/Bases de Datos')
 carpeta_ent = '/cr2_bases_datos'
@@ -20,13 +20,13 @@ file_entrada = entrada_dir + carpeta_ent + archivo_zip
 
 zip_file = ZipFile(file_entrada)
 
-datos_variable = pd.read_csv(zip_file.open(archivo_txt))
+# datos_variable = pd.read_csv(zip_file.open(archivo_txt))
 
 dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
 
 # lee los datos y transpone, dejando columnas como filas.
 # esto solo para evitar eliminar informacion de metadata de cada estacion
-dataVAR = (pd.read_csv(filepath_or_buffer=fileIN,
+dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
                         sep=',',
                         #header=np.arange(0,15).tolist(),
                         na_values=-9999,
@@ -45,10 +45,18 @@ dataVAR = dataVAR[1:-1]
 #dataVAR.head
 #dataVAR.shape
 #dataVAR.keys
-#dataVAR.columns
+#dataVAR.head
 
-dataVAR.head
+dataVAR.columns
 
+dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
+dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
+dataVAR.altura = pd.to_numeric(dataVAR.altura)
+
+dataVAR.inicio_observaciones = pd.to_datetime(dataVAR.inicio_observaciones)
+dataVAR.fin_observaciones = pd.to_datetime(dataVAR.fin_observaciones)
+
+# dataVAR.institucion = pd.to_string(dataVAR.institucion)
 # @todo
 #%% estacion por ubicacion particular dentro de la serie (slice)
 
