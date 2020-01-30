@@ -12,31 +12,15 @@ from zipfile import ZipFile
 
 entrada_dir = ('D:/GIT/Bases de Datos')
 carpeta_ent = '/cr2_bases_datos'
-archivo_zip = '/cr2_tasminDaily_2018_ghcn.zip'
+archivo_zip = '/cr2_prAmon_2018.zip'
 # archivo_csv = '/cr2_tasminDaily_2018_ghcn/cr2_tasminDaily_2018_ghcn.txt'
-archivo_txt = 'cr2_tasminDaily_2018_ghcn.txt'
+archivo_txt = 'cr2_prAmon_2018/cr2_prAmon_2018.txt'
 
 file_entrada = entrada_dir + carpeta_ent + archivo_zip
 
+zip_file = ZipFile(file_entrada)
 
-zip_file.open(text_file.filename))
-
-z = ZipFile(file_entrada)
-
-text_files = z.infolist()
-
-for text_file in text_files:
-    z.read(text_file.filename)
-
-z.close()
-
-with zipfile.ZipFile(file_entrada) as z:
-   with z.open(archivo_csv) as f:
-      train = pd.read_csv(f)
-      print(train.head())    # print the first 5 rows
-
-pd.read_csv(file_entrada[archivo_csv], compression='zip')
-
+datos_variable = pd.read_csv(zip_file.open(archivo_txt))
 
 dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
 
