@@ -4,22 +4,39 @@ Created on Fri Jan 24 13:57:03 2020
 
 @author: fanr
 """
-import zipfile
+
 import pandas as pd
-import numpy as np
-#import keras
+from zipfile import ZipFile
+
+# import numpy as np
 
 entrada_dir = ('D:/GIT/Bases de Datos')
 carpeta_ent = '/cr2_bases_datos'
 archivo_zip = '/cr2_tasminDaily_2018_ghcn.zip'
-archivo_csv = '/cr2_tasminDaily_2018_ghcn/cr2_tasminDaily_2018_ghcn.txt'
+# archivo_csv = '/cr2_tasminDaily_2018_ghcn/cr2_tasminDaily_2018_ghcn.txt'
+archivo_txt = 'cr2_tasminDaily_2018_ghcn.txt'
 
 file_entrada = entrada_dir + carpeta_ent + archivo_zip
 
+
+zip_file.open(text_file.filename))
+
+z = ZipFile(file_entrada)
+
+text_files = z.infolist()
+
+for text_file in text_files:
+    z.read(text_file.filename)
+
+z.close()
+
 with zipfile.ZipFile(file_entrada) as z:
    with z.open(archivo_csv) as f:
-      train = pd.read_csv(f, header=0, delimiter="\t")
+      train = pd.read_csv(f)
       print(train.head())    # print the first 5 rows
+
+pd.read_csv(file_entrada[archivo_csv], compression='zip')
+
 
 dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
 
@@ -86,4 +103,4 @@ dataVAR.any(dataVAR[4]=='-19.*')
 
 # %%
 ############## %%
-df = pd.DataFrame(np.arange(12).reshape(3, 4), columns=['A', 'B', 'C', 'D'])
+#df = pd.DataFrame(np.arange(12).reshape(3, 4), columns=['A', 'B', 'C', 'D'])
