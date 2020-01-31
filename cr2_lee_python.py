@@ -51,7 +51,8 @@ dataVAR = dataVAR[1:-1]
 
 dataVAR.columns
 
-#dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
+dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
+dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
 
 # @todo
 #%% estacion por ubicacion particular dentro de la serie (slice)
@@ -90,24 +91,19 @@ heat_map = sb.heatmap(pd.notna(periodo.iloc[:,14:]), vmin=0, vmax=1, cbar=True,
 
 
 
-#%%
-#%%
-print(dataVAR.iloc[0:1, 0:10])
+#%% seleccionar datos comprendidos entre ciertas coordenadas espaciales
 
-#latitud
-print(dataVAR.iloc[0,4])
+# con respecto a una coordenada
+coordenadas = dataVAR[dataVAR.latitud<=-19.0]
 
-#longitud
-print(dataVAR.iloc[0,5])
+# entre dos coordenadas
+# https://stackoverflow.com/questions/42082385/pandas-slicing-selecting-with-multiple-conditions-with-or-statement
+coordenadas = dataVAR.loc[(dataVAR.latitud<-19.0) & (dataVAR.latitud>-32.0)]
+print(coordenadas.latitud)
 
-print(dataVAR.where(dataVAR.iloc[4,:]=='-19.*'))
+# un poligono definido entre coordenadas geograficas de informacion.
+# https://stackoverflow.com/questions/42082385/pandas-slicing-selecting-with-multiple-conditions-with-or-statement
+coordenadas = dataVAR.loc[(dataVAR.latitud<=-19.0) & (dataVAR.latitud>-32.0) &
+                          (dataVAR.longitud>-72.0) & (dataVAR.longitud<=-68.0)]
+print(coordenadas.latitud.values, coordenadas.longitud.values)
 
-dataVAR[(dataVAR[4]=='-19.*' and dataVAR[5]=='-54.*')]
-#df[(df['col1'] >= 1) & (df['col1'] <=1 )]
-
-dataVAR.any(dataVAR[4]=='-19.*')
-
-
-# %%
-############## %%
-#df = pd.DataFrame(np.arange(12).reshape(3, 4), columns=['A', 'B', 'C', 'D'])
