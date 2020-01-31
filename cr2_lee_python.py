@@ -6,15 +6,15 @@ Created on Fri Jan 24 13:57:03 2020
 """
 
 import pandas as pd
+import seaborn as sb
 # import numpy as np
 from zipfile import ZipFile
 
 
 entrada_dir = ('D:/GIT/Bases de Datos')
 carpeta_ent = '/cr2_bases_datos'
-archivo_zip = '/cr2_prAmon_2018.zip'
-# archivo_csv = '/cr2_tasminDaily_2018_ghcn/cr2_tasminDaily_2018_ghcn.txt'
-archivo_txt = 'cr2_prAmon_2018/cr2_prAmon_2018.txt'
+archivo_zip = '/cr2_tasmaxDaily_2018_ghcn.zip'
+archivo_txt = 'cr2_tasmaxDaily_2018_ghcn/cr2_tasmaxDaily_2018_ghcn.txt'
 
 file_entrada = entrada_dir + carpeta_ent + archivo_zip
 
@@ -32,11 +32,13 @@ dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
                         na_values=-9999,
                         #dtype=np.float32,
                         encoding = 'utf-8',
+                        dtype='unicode'
                         )
             ).T
 
 # cambiando los nombres de las columnas por la fila 0
 dataVAR.columns = dataVAR.iloc[0]
+# for count, i in enumerate(dataVAR.columns[:20]): print(count, i)
 
 # eliminando la fila 0
 dataVAR = dataVAR[1:-1]
@@ -49,32 +51,45 @@ dataVAR = dataVAR[1:-1]
 
 dataVAR.columns
 
-dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
-dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
-dataVAR.altura = pd.to_numeric(dataVAR.altura)
+#dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
 
-dataVAR.inicio_observaciones = pd.to_datetime(dataVAR.inicio_observaciones)
-dataVAR.fin_observaciones = pd.to_datetime(dataVAR.fin_observaciones)
-
-# dataVAR.institucion = pd.to_string(dataVAR.institucion)
 # @todo
 #%% estacion por ubicacion particular dentro de la serie (slice)
 
-estacion = dataVAR[0:1]
+estacion = dataVAR.iloc[0:1]
 print(estacion)
-#%% buscar estaciones por rango de coordenadas.
 
-#%% buscar estacion por nombre aproximado de estacion y/o cuenca
+# buscar estacion por nombre aproximado de estacion y/o cuenca
 estacion = dataVAR.loc[dataVAR.nombre=='Visviri']  ## nombre especifico estacion
-estacion = dataVAR.loc[dataVAR.nombre_cuenca=='Rio Maipo']
-
 print(estacion)
-#%% heatmap de informacion comprendida con los datos
+
+#%% busqueda por cuenca, solo valido datos de Chile
+cuenca = dataVAR.loc[dataVAR.nombre_cuenca=='Rio Maipo']
+print(cuenca)
+
+# heatmap de periodos con datos dentro de la cuenca
+heat_map = sb.heatmap(pd.notna(cuenca.iloc[:,14:]), vmin=0, vmax=1, cbar=True,
+                      #center=0.5,
+                      cmap="binary",
+                      yticklabels=cuenca.nombre,
+                      )
+
+
+#%% seleccionar datos dentro de un periodo de tiempo, acorde a la base
+ini = '1980-01-01'
+fin = '2018-01-01'
+
+# https://pandas.pydata.org/docs/user_guide/merging.html
+periodo = pd.concat([cuenca.iloc[:,0:14], cuenca.loc[:, ini:fin]], axis=1, join='inner')
+
+heat_map = sb.heatmap(pd.notna(periodo.iloc[:,14:]), vmin=0, vmax=1, cbar=True,
+                      #center=0.5,
+                      cmap="binary",
+                      yticklabels=cuenca.nombre,
+                      )
 
 
 
-
-#%%
 #%%
 #%%
 print(dataVAR.iloc[0:1, 0:10])
