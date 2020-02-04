@@ -21,6 +21,8 @@ estas bases de datos, idealmente en python y R.
     + lectura datos descargados
 
 
+
+
 ~~## Graficos descriptivos~~
 ~~si hay tiempo agregare graficos descriptivos~~
 
