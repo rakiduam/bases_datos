@@ -6,16 +6,17 @@ estas bases de datos, idealmente en python y R.
 
 
 - cr2     : [Centro de Ciencia del Clima y la Resiliencia (CR)2](http://www.cr2.cl)
-    + base de datos por variable
+    + base de datos por variable (listo)
     + base de datos grillada de clima, de CR2
 
 - sinca   : [Sistema de Información Nacional de Calidad del Aire](https://sinca.mma.gob.cl/)
-    + datos de estacion de medicion de contaminantes
+    + ordenar datos de estacion de medicion de contaminantes, fechas (listo)
 
 - ran     : [Red Agroclimatica Nacional (agromet)](http://www.agromet.cl)
     + lectura y union de datos historicos por estacion
 
 - dmc     : [Dirección meteorologica de Chile]
+    + lectura datos estación
 
 - dga     : [Banco Nacional Aguas, reportes](http://snia.dga.cl/BNAConsultas/reportes)
     + lectura datos descargados
