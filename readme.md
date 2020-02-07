@@ -1,7 +1,6 @@
 
-#Serie de scripts basicos para manejo de bases de datos de Chile
-=======
 # Serie de scripts basicos para manejo de bases de datos de Chile
+
 
 
 
