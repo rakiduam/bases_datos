@@ -21,12 +21,12 @@ estas bases de datos, idealmente en python y R.<br/>
 * dga     : [Banco Nacional Aguas, reportes](http://snia.dga.cl/BNAConsultas/reportes)
            <br>+ lectura datos descargados<br/>
 
+<br>
 <br/>
-<br/>
-~~## Graficos descriptivos~~<br/>
-~~si hay tiempo agregare graficos descriptivos~~
-~~- viento            :~~<br/>
-~~- precipitacion     :~~<br/>
-~~- temperatura       :~~<br/>
-~~- radiación solar   :~~<br/>
-~~- humedad relativa  :~~<br/>
+<br>~~## Graficos descriptivos~~<br/>
+<br>~~si hay tiempo agregare graficos descriptivos~~
+<br>~~- viento            :~~<br/>
+<br>~~- precipitacion     :~~<br/>
+<br>~~- temperatura       :~~<br/>
+<br>~~- radiación solar   :~~<br/>
+<br>~~- humedad relativa  :~~<br/>
