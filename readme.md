@@ -23,15 +23,10 @@ estas bases de datos, idealmente en python y R.<br/>
 
 <br/>
 <br/>
-~~## Graficos descriptivos~~
+~~## Graficos descriptivos~~<br/>
 ~~si hay tiempo agregare graficos descriptivos~~
-
-~~- viento            :~~
-
-~~- precipitacion     :~~
-
-~~- temperatura       :~~
-
-~~- radiación solar   :~~
-
-~~- humedad relativa  :~~
+~~- viento            :~~<br/>
+~~- precipitacion     :~~<br/>
+~~- temperatura       :~~<br/>
+~~- radiación solar   :~~<br/>
+~~- humedad relativa  :~~<br/>
