@@ -32,12 +32,15 @@ div = soup.find('div', attrs={'class':"panel-body text-left"})
 table_rows = div.find_all('tr')
 
 # comienzo de la depuracion de informacion y transformacion a un dataframe
+# primero almacena en una lista
 l = []
 for tr in table_rows:
     td = tr.find_all('td')
     row = [tr.text for tr in td]
     l.append(row)
 
+# transforma la lista y le asigna nombres a las columnas, modificadas desde
+# columnas de origen
 data = pd.DataFrame(l, columns=['tmin_c','tmax_c','tmed_c',
                                 'humedad_media_porcentaje','agua_caida_mm',
                                 'evapotranspiracion_mm-dia',
@@ -48,7 +51,7 @@ data = pd.DataFrame(l, columns=['tmin_c','tmax_c','tmed_c',
 # se eliminan aquellos filas sin informacion
 data = data.drop(axis=0, index=[0,1,30,31,32])
 
-# se inserta la fecha correspondiente
+# se calcula e inserta la fecha correspondiente, como primera columna
 data.insert(loc=0, column='fecha',
             value=pd.date_range(start=('-').join([date_year, str(date_month).zfill(2),'01']),
                                 end=('-').join([date_year, str(date_month).zfill(2), date_days])))
