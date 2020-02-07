@@ -7,26 +7,18 @@ estas bases de datos, idealmente en python y R.<br/>
 
 
 * cr2     : [Centro de Ciencia del Clima y la Resiliencia (CR)2](http://www.cr2.cl)
-           <br>+ base de datos por variable<br/>
-           <br>+ base de datos grillada de clima, de CR2<br/>
+           + base de datos por variable  
+           + base de datos grillada de clima, de CR2  
 
-* sinca   : [Sistema de Información Nacional de Calidad del Aire](https://sinca.mma.gob.cl/)
-           <br>+ datos de estacion de medicion de contaminantes<br/>
+* sinca   : [Sistema de Información Nacional de Calidad del Aire](https://sinca.mma.gob.cl/)  
+           + datos de estacion de medicion de contaminantes  
 
-* ran     : [Red Agroclimatica Nacional (agromet)](http://www.agromet.cl)
-           <br>+ lectura y union de datos historicos por estacion<br/>
+* ran     : [Red Agroclimatica Nacional (agromet)](http://www.agromet.cl)  
+           + lectura y union de datos historicos por estacion  
 
-* dmc     : [Dirección meteorologica de Chile]
+* dmc     : [Dirección meteorologica de Chile]  
 
-* dga     : [Banco Nacional Aguas, reportes](http://snia.dga.cl/BNAConsultas/reportes)
-           <br>+ lectura datos descargados<br/>
+* dga     : [Banco Nacional Aguas, reportes](http://snia.dga.cl/BNAConsultas/reportes)  
+           + lectura datos descargados
 
-<br>
-<br/>
-<br>~~## Graficos descriptivos~~<br/>
-<br>~~si hay tiempo agregare graficos descriptivos~~
-<br>~~- viento            :~~<br/>
-<br>~~- precipitacion     :~~<br/>
-<br>~~- temperatura       :~~<br/>
-<br>~~- radiación solar   :~~<br/>
-<br>~~- humedad relativa  :~~<br/>
+~~Graficos, si alcanza el tiempo~~
