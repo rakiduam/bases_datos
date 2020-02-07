@@ -54,7 +54,7 @@ data.insert(loc=0, column='fecha',
                                 end=('-').join([date_year, str(date_month).zfill(2), date_days])))
 
 
-# %%
+# %% de aqui en adelante es solo relleno y pruebas, falta para codigo final
 
 #print(soup.div['style']="display:none")
 soup.table['id']='freq'
