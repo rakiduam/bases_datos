@@ -1,10 +1,7 @@
 
 # Serie de scripts basicos para manejo de bases de datos de Chile
 
-
-
-
-##Lectura de datos
+## Lectura de datos
 son scripts básicos, de limpieza y busqueda rapida de datos o series dentro de
 estas bases de datos, idealmente en python y R.<br/>
 
@@ -25,7 +22,7 @@ estas bases de datos, idealmente en python y R.<br/>
            <br>+ lectura datos descargados<br/>
 
 
-~~## Graficos descriptivos~~
+~~ ## Graficos descriptivos ~~
 ~~si hay tiempo agregare graficos descriptivos~~
 
 ~~- viento            :~~
