@@ -25,6 +25,10 @@ estas bases de datos, idealmente en python y R.<br/>
 
 ## Listado de paquetes usados (para recordar) :  
 * python  : scipy numpy gdal pandas geopandas matplotlib seaborn BeautifulSoup4 h5py netCDF4 rasterio statsmodels tqdm xarray  
-```{python} pip list ```
+```{python} 
+pip list
+```
 * R       : tidyverse, lattice, rgdal, raster, maptools, gdalUtils, geoR, hydroGOF, hydroTSM, influenceR, maps, mapdata, ncdf4,  
-```{r} installed.packages() ```
+```{r}
+installed.packages()
+```
