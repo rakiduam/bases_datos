@@ -3,6 +3,10 @@
 Created on Wed Feb  5 16:45:31 2020
 
 @author: fanr
+
+# referencias:
+- https://pandas.pydata.org/
+- https://www.youtube.com/watch?v=E5cSNSeBhjw
 """
 
 import pandas as pd
@@ -48,13 +52,31 @@ data = pd.DataFrame(l, columns=['tmin_c','tmax_c','tmed_c',
                                 'rad_glob_max_watt-m2',
                                 'rad_glob_hora_local'], dtype='unicode')
 
-# se eliminan aquellos filas sin informacion
-data = data.drop(axis=0, index=[0,1,30,31,32])
+# se eliminan aquellos filas sin informacion, 2 primeras, 3 ultimas
+data = data.drop(axis=0, index=(data.index[:2].tolist()+data.index[-3:].tolist()))
 
 # se calcula e inserta la fecha correspondiente, como primera columna
 data.insert(loc=0, column='fecha',
             value=pd.date_range(start=('-').join([date_year, str(date_month).zfill(2),'01']),
                                 end=('-').join([date_year, str(date_month).zfill(2), date_days])))
+
+# en teoria, este codigo debería ser iterable, para extraer informacion desde dmc
+
+# periodo = (('-').join([date_year, str(date_month).zfill(2),'01']) + '_'+ ('-').join([date_year, str(date_month).zfill(2), date_days]))
+# nombre = ('/').join(['D:', ('_').join([estacion, periodo])])
+
+# data.to_csv(path_or_buf=(nombre+'.csv'), sep=',', na_rep='NaN')
+
+# %% listado estaciones
+
+url = 'https://climatologia.meteochile.gob.cl/application/informacion/buscadorDeEstaciones/'
+req = requests.get(url)
+soup = BeautifulSoup(req.text, 'html_parser')
+
+
+
+
+
 
 
 # %% de aqui en adelante es solo relleno y pruebas, falta para codigo final
