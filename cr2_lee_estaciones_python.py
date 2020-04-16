@@ -11,7 +11,7 @@ import seaborn as sb
 from zipfile import ZipFile
 
 
-entrada_dir = ('D:/GIT/Bases de Datos')
+entrada_dir = ('D:/WORK/GIT/bases_datos')
 carpeta_ent = '/cr2_bases_datos'
 archivo_zip = '/cr2_tasmaxDaily_2018_ghcn.zip'
 archivo_txt = 'cr2_tasmaxDaily_2018_ghcn/cr2_tasmaxDaily_2018_ghcn.txt'
@@ -107,3 +107,67 @@ coordenadas = dataVAR.loc[(dataVAR.latitud<=-19.0) & (dataVAR.latitud>-32.0) &
                           (dataVAR.longitud>-72.0) & (dataVAR.longitud<=-68.0)]
 print(coordenadas.latitud.values, coordenadas.longitud.values)
 
+#%% mensual
+import pandas as pd
+import seaborn as sb
+# import numpy as np
+from zipfile import ZipFile
+import seaborn as sns
+
+
+entrada_dir = ('D:/WORK/GIT/bases_datos')
+carpeta_ent = '/cr2_bases_datos'
+archivo_zip = '/cr2_prAmon_2018.zip'
+archivo_txt = 'cr2_prAmon_2018/cr2_prAmon_2018.txt'
+
+file_entrada = entrada_dir + carpeta_ent + archivo_zip
+
+zip_file = ZipFile(file_entrada)
+
+# datos_variable = pd.read_csv(zip_file.open(archivo_txt))
+
+dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m')
+
+# lee los datos y transpone, dejando columnas como filas.
+# esto solo para evitar eliminar informacion de metadata de cada estacion
+dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
+                        sep=',',
+                        #header=np.arange(0,15).tolist(),
+                        na_values=-9999,
+                        #dtype=np.float32,
+                        encoding = 'utf-8',
+                        dtype='unicode'
+                        )
+            ).T
+
+# cambiando los nombres de las columnas por la fila 0
+dataVAR.columns = dataVAR.iloc[0]
+
+# eliminando la fila 0
+dataVAR = dataVAR[1:-1]
+
+dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
+dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
+
+coordenadas = dataVAR.loc[(dataVAR.latitud<=-34) & (dataVAR.latitud>-36.0) &
+                          (dataVAR.longitud>-73) & (dataVAR.longitud<=-71.0)]
+print(coordenadas.latitud.values, coordenadas.longitud.values)
+
+# seleccionar datos dentro de un periodo de tiempo, acorde a la base
+ini = '1998-01'
+fin = '2018-01'
+
+# https://pandas.pydata.org/docs/user_guide/merging.html
+periodo = pd.concat([coordenadas.iloc[:,0:14], coordenadas.loc[:, ini:fin]], axis=1, join='inner')
+
+# contador de cuantos datos validos posee la estación en dicho periodo
+periodo['cuenta'] = (periodo.T).iloc[14:-2,:].count()
+
+# generar heatmap de datos estacion
+heat_map = sb.heatmap(pd.notna(periodo.iloc[:,14:]), vmin=0, vmax=1, cbar=True,
+                      #center=0.5,
+                      cmap="binary",
+                      yticklabels=coordenadas.nombre,
+                      )
+
+periodo.to_csv('D:/WORK/CR2_pp_periodo.csv', sep=',' )
