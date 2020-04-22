@@ -36,6 +36,10 @@ dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
                         )
             ).T
 
+## todo el proceso anterior lee los datos como si fueran texto,
+## para otros analisis es necesario transformar a numerico, como pasa con R.
+
+
 # cambiando los nombres de las columnas por la fila 0
 dataVAR.columns = dataVAR.iloc[0]
 # for count, i in enumerate(dataVAR.columns[:20]): print(count, i)
@@ -108,8 +112,15 @@ coordenadas = dataVAR.loc[(dataVAR.latitud<=-19.0) & (dataVAR.latitud>-32.0) &
 print(coordenadas.latitud.values, coordenadas.longitud.values)
 
 #%% mensual
+""" documentacion:
+    - https://stackoverflow.com/questions/34275140/hide-axis-titles-in-seaborn
+    - https://stackoverflow.com/questions/15891038/change-data-type-of-columns-in-pandas
+
+"""
+
 import pandas as pd
 import seaborn as sb
+import matplotlib.pyplot as plt
 # import numpy as np
 from zipfile import ZipFile
 import seaborn as sns
@@ -140,6 +151,10 @@ dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
                         )
             ).T
 
+## todo el proceso anterior lee los datos como si fueran texto,
+## para otros analisis es necesario transformar a numerico, como pasa con R.
+
+
 # cambiando los nombres de las columnas por la fila 0
 dataVAR.columns = dataVAR.iloc[0]
 
@@ -149,25 +164,60 @@ dataVAR = dataVAR[1:-1]
 dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
 dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
 
-coordenadas = dataVAR.loc[(dataVAR.latitud<=-34) & (dataVAR.latitud>-36.0) &
-                          (dataVAR.longitud>-73) & (dataVAR.longitud<=-71.0)]
+coordenadas = dataVAR.loc[(dataVAR.latitud<=-34.04) & (dataVAR.latitud>-36.6) &
+                           (dataVAR.longitud>-73) & (dataVAR.longitud<=-71.0)]
+# coordenadas = dataVAR.loc[(dataVAR.latitud<=-32.0) & (dataVAR.latitud>-40.0) &
+#                           (dataVAR.longitud>-73.0) & (dataVAR.longitud<=-69.0)]
 print(coordenadas.latitud.values, coordenadas.longitud.values)
 
 # seleccionar datos dentro de un periodo de tiempo, acorde a la base
-ini = '1998-01'
-fin = '2018-01'
+ini = '1987-01'
+fin = '2017-12'
 
 # https://pandas.pydata.org/docs/user_guide/merging.html
 periodo = pd.concat([coordenadas.iloc[:,0:14], coordenadas.loc[:, ini:fin]], axis=1, join='inner')
 
 # contador de cuantos datos validos posee la estación en dicho periodo
+# se basa en que datos ya han sido filtrados por nan.
 periodo['cuenta'] = (periodo.T).iloc[14:-2,:].count()
 
+periodo = periodo.loc[periodo.cuenta>10]
+#periodo = periodo.loc[periodo.cuenta>238]
+
+## ambas funciones realizan lo mismo, una mascara de los valores nulos.
+# pd.notna(periodo.iloc[:,14:])
+# periodo.iloc[:,14:-1].isnull()
+
 # generar heatmap de datos estacion
-heat_map = sb.heatmap(pd.notna(periodo.iloc[:,14:]), vmin=0, vmax=1, cbar=True,
+calormap = periodo.iloc[:,14:-1].T
+calormap.columns = periodo.nombre
+
+# ADDED: Extract axes.
+fig, ax = plt.subplots(1, 1,
+                       # figsize = (15, 15),
+                       #dpi=300
+                       )
+
+# la razon porque mostraba solo valores 0-1, era porque estaba como texto.
+heat_map = sb.heatmap(periodo.iloc[:,14:-1].astype(float),
+                      vmin=0, vmax=1000,
+                      #square=True,
+                      mask = periodo.iloc[:,14:-1].isnull(),
+                      cbar=True,
                       #center=0.5,
-                      cmap="binary",
-                      yticklabels=coordenadas.nombre,
+                      cmap="magma_r",
+                      #cmap="binary",
+                      #cmap="viridis",
+                      yticklabels=periodo.nombre,
+                      #annot=True
+                      #linewidths=.005
                       )
 
+
+# ADDED: Remove labels.
+ax.set_ylabel('')
+ax.set_xlabel('')
+
+
 periodo.to_csv('D:/WORK/CR2_pp_periodo.csv', sep=',' )
+
