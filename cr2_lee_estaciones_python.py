@@ -123,21 +123,21 @@ import seaborn as sb
 import matplotlib.pyplot as plt
 # import numpy as np
 from zipfile import ZipFile
+import numpy as np
 import seaborn as sns
-
+import scipy
 
 entrada_dir = ('D:/WORK/GIT/bases_datos')
 carpeta_ent = '/cr2_bases_datos'
-archivo_zip = '/cr2_prAmon_2018.zip'
-archivo_txt = 'cr2_prAmon_2018/cr2_prAmon_2018.txt'
+archivo_zip = '/cr2_prAmon_2019.zip'
+archivo_txt = 'cr2_prAmon_2019/cr2_prAmon_2019.txt'
 
 file_entrada = entrada_dir + carpeta_ent + archivo_zip
 
 zip_file = ZipFile(file_entrada)
 
 # datos_variable = pd.read_csv(zip_file.open(archivo_txt))
-
-dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m')
+dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
 
 # lee los datos y transpone, dejando columnas como filas.
 # esto solo para evitar eliminar informacion de metadata de cada estacion
@@ -154,7 +154,6 @@ dataVAR = (pd.read_csv(filepath_or_buffer=zip_file.open(archivo_txt),
 ## todo el proceso anterior lee los datos como si fueran texto,
 ## para otros analisis es necesario transformar a numerico, como pasa con R.
 
-
 # cambiando los nombres de las columnas por la fila 0
 dataVAR.columns = dataVAR.iloc[0]
 
@@ -164,15 +163,38 @@ dataVAR = dataVAR[1:-1]
 dataVAR.latitud = pd.to_numeric(dataVAR.latitud)
 dataVAR.longitud = pd.to_numeric(dataVAR.longitud)
 
+# cambiar datos a numerico
+## todo el proceso anterior lee los datos como si fueran texto,
+ ## para otros analisis es necesario transformar a numerico, como pasa con R.
+# for i in range(0, len(dataVAR.iloc[:])):
+#     print(i)
+#     (dataVAR.iloc[i,14:]) = pd.to_numeric(dataVAR.iloc[i,14:])
+
+# for j in range(14, dataVAR.shape[-1]):
+#     print(j)
+#     dataVAR.loc[dataVAR.iloc[:, j]<0] = np.nan
+
+df = np.array(dataVAR.iloc[:, 14:], dtype=np.float)
+
+df[np.where(df<0)] = np.nan
+
+dataVAR.iloc[:, 14:] = df
+
+dataVAR.to_excel('D:/dataVAR.xlsx')
+
+# stats.mstats.mquantiles(df)
+
 coordenadas = dataVAR.loc[(dataVAR.latitud<=-34.04) & (dataVAR.latitud>-36.6) &
-                           (dataVAR.longitud>-73) & (dataVAR.longitud<=-71.0)]
-# coordenadas = dataVAR.loc[(dataVAR.latitud<=-32.0) & (dataVAR.latitud>-40.0) &
-#                           (dataVAR.longitud>-73.0) & (dataVAR.longitud<=-69.0)]
-print(coordenadas.latitud.values, coordenadas.longitud.values)
+                          (dataVAR.longitud>-73) & (dataVAR.longitud<=-71.0)]
+
+# coordenadas = dataVAR.loc[(dataVAR.latitud<=-17.0) & (dataVAR.latitud>-58.1) &
+#                            (dataVAR.longitud>-73.0) & (dataVAR.longitud<=-69.0)]
+
+# print(coordenadas.latitud.values, coordenadas.longitud.values)
 
 # seleccionar datos dentro de un periodo de tiempo, acorde a la base
-ini = '1987-01'
-fin = '2017-12'
+ini = '1900-01'
+fin = '2019-12'
 
 # https://pandas.pydata.org/docs/user_guide/merging.html
 periodo = pd.concat([coordenadas.iloc[:,0:14], coordenadas.loc[:, ini:fin]], axis=1, join='inner')
@@ -181,7 +203,7 @@ periodo = pd.concat([coordenadas.iloc[:,0:14], coordenadas.loc[:, ini:fin]], axi
 # se basa en que datos ya han sido filtrados por nan.
 periodo['cuenta'] = (periodo.T).iloc[14:-2,:].count()
 
-periodo = periodo.loc[periodo.cuenta>10]
+periodo = periodo.loc[periodo.cuenta>1]
 #periodo = periodo.loc[periodo.cuenta>238]
 
 ## ambas funciones realizan lo mismo, una mascara de los valores nulos.
@@ -198,14 +220,16 @@ fig, ax = plt.subplots(1, 1,
                        #dpi=300
                        )
 
-# la razon porque mostraba solo valores 0-1, era porque estaba como texto.
-heat_map = sb.heatmap(periodo.iloc[:,14:-1].astype(float),
-                      vmin=0, vmax=1000,
+#la razon porque mostraba solo valores 0-1, era porque estaba como texto.
+heat_map = sns.heatmap(periodo.iloc[:,14:-1].astype(float),
+                      #vmin=0,
+                      #vmax=300,
                       #square=True,
                       mask = periodo.iloc[:,14:-1].isnull(),
                       cbar=True,
                       #center=0.5,
-                      cmap="magma_r",
+                      #cmap="magma_r",
+                      cmap="coolwarm_r",
                       #cmap="binary",
                       #cmap="viridis",
                       yticklabels=periodo.nombre,
@@ -219,5 +243,10 @@ ax.set_ylabel('')
 ax.set_xlabel('')
 
 
-periodo.to_csv('D:/WORK/CR2_pp_periodo.csv', sep=',' )
+#periodo.to_csv('E:/CR2_pp_periodo.csv', sep=';' )
 
+#periodo.to_excel('E:/CR2_pp_periodo.xlsx')
+
+# dataVAR.to_excel('D:/dataVAR.xlsx')
+
+aa = scipy.stats.mstats.idealfourths(df,1)
