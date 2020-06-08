@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-
+##
+"
+https://www.youtube.com/watch?v=A3gClkblXK8
+"
+###
 ## limpiar el espacio de trabajo
 rm ( list = ls () )
 cat( rep ( "\n", 64 ) )
