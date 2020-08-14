@@ -1,7 +1,36 @@
 # -*- coding: utf-8 -*-
-##
+#### IDEA #####
+
 "
-https://www.youtube.com/watch?v=A3gClkblXK8
+
+idea:
+  - crear una bateria de analisis para datos de precipitacion que permitan identificar
+  datos anomalos dentro de la serie
+
+contexto:
+  Precipitación es una variable climatica dificil de caracterizar, ya que no
+  posee valores continuos. Y en lugares como Chile, donde gran parte del territorio
+  tiene peridos secos y humedos marcados, este tipo de analisis es complicado.
+
+pasos:
+  - se define una bateria de estadisticos, sesgados e insesgados
+  - algunos criterios de informacion, tales como n_datos, fechas valor máximo
+  - criterios estadisticos como, como percentiles, rango intercuantil y mediana
+
+fuentes:
+  - https://www.stat.purdue.edu/~huang251/1018.html
+  - https://www.youtube.com/watch?v=A3gClkblXK8
+  - https://www.youtube.com/watch?v=12Xq9OLdQwQ // https://github.com/Zelazny7/isofor
+  - https://algobeans.com/2016/09/14/k-nearest-neighbors-anomaly-detection-tutorial/
+  - https://machinelearningstories.blogspot.com/2018/07/anomaly-detection-anomaly-detection-by.html?m=1
+  - https://towardsdatascience.com/time-series-of-price-anomaly-detection-13586cd5ff46
+
+  USO DE IQR Y DESVIACION ESTANDAR
+  - https://www.youtube.com/watch?v=rzR_cKnkD18
+
+  MAHALANOBIS DETECCION OUTLIERS
+  - http://eurekastatistics.com/using-mahalanobis-distance-to-find-outliers/
+
 "
 ###
 ## limpiar el espacio de trabajo
@@ -117,6 +146,14 @@ median_absolute_deviation <- function(x) {
 }
 
 
+standarized_anomalies <- function(x, media_muestral, desviacion_estandar) {
+  #formula extraida desde el wilks
+  b <- ((x-media_muestral)/desviacion_estandar)
+  return(b)
+}
+
+
+
 #### LIBRERIAS USADAS ####
 library(dplyr)
 
@@ -127,7 +164,7 @@ df <- read.csv(archivo_zip[2], sep=',', header = FALSE, na.strings = '-9999',
                     stringsAsFactors = TRUE, encoding = 'utf-8')
 rm(archivo_zip)
 
-## limpieza dataframe ##
+#### LIMPIEZA DATAFRAME ####
 df <- t(df)
 colnames(df) <- c(as.character(df[1,]))
 df <- (df[-1,])
@@ -137,9 +174,12 @@ df <- type.convert(df, na.strings = "NA", numerals = "no.loss")
 # str(df) ## chequeo de estructura de los datos
 
 
-## comienzo de filtros de informacion
+#### FILTROS INFORMACION ####
 # filtro 0, respecto a ubicación espacial, stgo = -33.4 && temuco = -38.8
-df <- filter(df, df$latitud>=-40.0, df$latitud <= -32.0)
+df <- filter(df, df$latitud>=-70.0, df$latitud <= -42.0)
+df <- arrange(df, desc(latitud))
+#sort(df$latitud, decreasing = TRUE)
+# print(df$latitud)
 # df <- filter(df, df$latitud>=-36.64, df$latitud <= -34.1)
 
 # filtro 1, por estaciones de interes, en este caso de la zona estudio, mediante id
@@ -155,7 +195,7 @@ interes <- c('340031', '360011', '6019003', '6019005', '6034003', '6036001',
              '7374005', '7376002', '7378002', '7378003', '7379002', '7381003',
              '7383001', '7384002', '8113001', '8117002', '8117009', '8118003',
              '8118004', '8141002', '8142001')
-df <- filter(df, df$codigo_estacion %in% interes)
+#df <- filter(df, df$codigo_estacion %in% interes)
 
 # filtro 1, continuacion, acotacion de estaciones al norte del maule
 maule_norte <- c('340031', '6019003', '6019005', '6034003', '6036001', '6044001',
@@ -164,7 +204,7 @@ maule_norte <- c('340031', '6019003', '6019005', '6034003', '6036001', '6044001'
                  '7121003', '7123001', '7200001', '7210001', '7320002', '7321002',
                  '7370001', '7371002', '7373003', '7373004', '7374004', '7374005',
                  '7376002', '7378002', '7378003', '7379002', '7381003', '7383001')
-df <- filter(df, df$codigo_estacion %in% maule_norte)
+#df <- filter(df, df$codigo_estacion %in% maule_norte)
 
 
 
@@ -216,7 +256,7 @@ for (i in c(1:nrow(asdfVAR))){
 }
 
 # filtro 4
-asdfVAR<-filter(asdfVAR, data_num>120)
+asdfVAR<-filter(asdfVAR, n_data>120)
 
 # asdfVAR$revisa <- '-'
 # getmode(asdfVAR$colmax)
@@ -260,22 +300,37 @@ asdf <- t(asdfVAR[2:(ncol(asdfVAR)-difcol)])
 # aa = t(filter(asdfVAR, data_num==127))
 
 colnames(asdf) <- asdfVAR$nombre
-# View(asdf1)
+# View(asdf)
 # View(asdf1[,14])
 asdf.max = max(asdf, na.rm = TRUE)
 
-par (mar=c(18, 4, 2, 2)+0.1)
-boxplot(asdf[,c(1:ncol(asdf))], las = 2, ylim=c(0, asdf.max))
+#par (mar=c(18, 4, 2, 2)+0.1)
+boxplot(asdf[,c(1:ncol(asdf))], las = 2, ylim=c(0, asdf.max),
+        ylab = "Precipitaciones (mm)",
+        # xlab = "Estaciones"
+        )
 
-write.table(asdf1, 'E:/ESTACIONES_CORRECCION/DGA/asdf3.csv', sep=';')
+# boxplot(asdf[,c(1:(ncol(asdf)/50))], las = 2, ylim=c(0, asdf.max), ylab = "Precipitaciones (mm)",)
+##### ASDSFSDFSDF #######
+# me habria ahorrado la paja mental de calcular ccon summary
+summary(asdf)
+head(asdf)
+dim(asdf)
+
+standarized_anomalies(asdf[,1], 53.822, 87.997)
+
+(apply(asdf[,c(1:36)], MARGIN = 0, FUN = standarized_anomalies))
+asdf[,1]
+
+# write.table(asdf1, 'E:/ESTACIONES_CORRECCION/DGA/asdf3.csv', sep=';')
 
 ##### . #####
 # df1 <- filter(df[c(seq(1:15), (ncol(df)-(12*(30+1))+1):ncol(df))], df$nombre %in% asdfVAR$nombre)
 # View(df1)
 # df1[, c(16:ncol(df1))] <- (df1[, c(16:ncol(df1))] * ifelse(df1[, c(16:ncol(df1))] < 0, NA, 1))
-# 
+#
 # df1 <- t(df1)
-# 
+#
 # write.table(df1, 'E:/cr2_ppMonth_1989-2019.csv',sep = ';')
 
 

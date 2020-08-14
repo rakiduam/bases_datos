@@ -22,7 +22,15 @@ supuestos claves:
         (siendo una lista de listas de diccionarios de dataframes)
     - en caso de faltar un año, la cantidad de datos sera distinta (condicion)
 
-https://www.pythonforbeginners.com/dictionary/how-to-use-dictionaries-in-python/
+informacion:
+    - oscilacion enso
+        https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php
+    - Climate indices monthly atmospheric and ocean time series
+        https://psl.noaa.gov/data/climateindices/list/
+
+
+funciones:
+    https://www.pythonforbeginners.com/dictionary/how-to-use-dictionaries-in-python/
 
 
 vecinos mas cercanos:
@@ -37,6 +45,12 @@ relleno de datos de pp:
 IDF:
     - https://www.youtube.com/watch?v=A0aJZqWRqP0
 
+ICP: (indice conCentracion precipitacion)
+    - http://www.ideam.gov.co/documents/21021/21147/Indices+climatologicos.pdf/fde6a7ec-6cd9-47af-b9bd-c935cebb0947
+
+GWR:
+    - https://github.com/pysal/mgwr
+
 """
 
 import os, pandas as pd, numpy as np
@@ -47,19 +61,19 @@ from glob import glob
 # necesarios para transformar cada diccionario de hojas, en una lista de estaciones
 # import operator
 # from functools import reduce
-
-os.chdir('E:/ESTACIONES_CORRECCION/DGA')
-
+#E:\ESTACIONES_CORRECCION\DGA\REPORTES
+#os.chdir('E:/Factor_R/BBDD/DGA_reporte_web_1980-2019')
+os.chdir('D:/MAGALLANES/DGA/')
 
 archivos_xls = None
-archivos_xls = glob('*.xl*')
+archivos_xls = glob('REPORTES/**.xl*')
 
 nombres = None
 # nombres = list(set(reduce(operator.concat,[list(pd.read_excel(xls, sheet_name=None).keys()) for xls in archivos_xls])))
 nombres = list(set([y for x in [list(pd.read_excel(xls, sheet_name=None).keys()) for xls in archivos_xls]  for y in x]))
 
 data_variable = None
-data_variable = pd.DataFrame(index=pd.date_range('1980/01','2020/01',freq='M',closed='left'),
+data_variable = pd.DataFrame(index=pd.date_range('1980/01','2021/01',freq='M',closed='left'),
                              columns=nombres)
 
 libros_xls = None
@@ -91,15 +105,15 @@ for libro in libros_xls[:]:
 
 del data, rango_completo, rango_reporte, rango, periodo, ini, fin, jar, niu_fila, hoja, libro
 
-data_variable.to_excel('D:/Desktop/DGA_estaciones_1980-2020.xlsx')
-
-
-# data_variable = pd.DataFrame([pd.to_numeric(data_variable[str(y)]) for y in data_variable.columns]).T
 data_variable.head()
 data_variable.info()
 data_variable.describe()
 
-#%%#############################################################################
+# data_variable.to_excel('D:/Desktop/DGA_estaciones_1980-2020.xlsx')
+
+# data_variable = pd.DataFrame([pd.to_numeric(data_variable[str(y)]) for y in data_variable.columns]).T
+
+#%#% obtencion metadata ########################################################
 
 # metadata
 libros_xls = [pd.read_excel(xls, sheet_name=None, header=4, usecols=[1,3,14,17,21,25], index_col=None, nrows=4) for xls in archivos_xls]
@@ -119,17 +133,90 @@ for libro in libros_xls:
 metadata = metadata.reindex(['CodigoBNA','Estación','UTMNorte(m)','UTMEste(m)',
                              'LatitudS','LongitudW','Altitud(msnm)','Cuenca',
                              'SubCuenca','ÁreaDrenaje(km2)'])
+
+# codigo_estacion
+# nombre
+# UTMNorte(m)
+# UTMEste(m)
+# LatitudS
+# LongitudW
+# Altitud(msnm)
+# Cuenca
+# SubCuenca
+# ÁreaDrenaje(km2)
+# lat
+# lon
+
+# codigo_estacion
+# institucion
+# fuente
+# nombre
+# altura
+# latitud
+# longitud
+# codigo_cuenca
+# nombre_cuenca
+# codigo_sub_cuenca
+# nombre_sub_cuenca
+# inicio_observaciones
+# fin_observaciones
+# cantidad_observaciones
+# inicio_automatica
+
 del libro, hoja, rows, data
 
 metadata = metadata.T
 
-metadata.to_excel('D:/Desktop/DGA_estaciones_1980-2020_metadata.xlsx')
+metadata['codigo_estacion'] = [str(np.int(cod.split('-')[0])) for cod in metadata.iloc[:,0]]
+metadata['latitud'] = np.array([(np.int(lat.strip()[:2]) + np.int(lat.strip()[4:6])/60 + np.int(lat.strip()[8:10])/3600)*-1 for lat in metadata.LatitudS])
+metadata['longitud'] = np.array([(np.int(lon.strip()[:2]) + np.int(lon.strip()[4:6])/60 + np.int(lon.strip()[8:10])/3600)*-1 for lon in metadata.LongitudW])
+metadata['fuente'] = 'dga_reporte_web'
+metadata['institucion'] = 'DGA'
+metadata['nombre'] = [nom.strip() for nom in metadata.iloc[:,1]]
 
-#%% ##########################################################################
+metadata = metadata.T
+
+metadata = metadata.reindex(['codigo_estacion', 'institucion', 'fuente',
+                             'nombre', 'Altitud(msnm)', 'latitud', 'longitud',
+                             'CodigoBNA', 'Cuenca', 'Estación', 'SubCuenca', 
+                             'UTMNorte(m)', 'UTMEste(m)', 'LatitudS', 'LongitudW', 
+                             'ÁreaDrenaje(km2)'
+                             ]
+                            )
+# codigo_estacion,  institucion,  fuente
+# nombre, altura, latitud, longitud
+# codigo_cuenca, nombre_cuenca, codigo_sub_cuenca, nombre_sub_cuenca
+# inicio_observaciones, fin_observaciones, cantidad_observaciones, inicio_automatica
+
+metadata.info()
+
+# metadata.to_excel('D:/Desktop/DGA_estaciones_1980-2020_metadata.xlsx')
+
+#%#% en formato CR2 ############################################################
+
+# metadata oficial
+
+
+# info de los dataframes
+data_variable.info()
+metadata.info()
+
+todo = pd.concat([metadata, data_variable])
+
+todo.head()
+todo.info()
+todo.describe()
+
+todo.to_excel('DGA_1980-2020_reporte_web.xlsx')
+
+#%% ###########################################################################
 
 ## DISTANCIAS
 coord = np.transpose(metadata)
 
+# modulo de knn nearest, busca en n dimensiones el punto mas cercano.
+# usa distancias euclidianas
+from scipy import spatial
 
 
 

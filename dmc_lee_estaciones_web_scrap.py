@@ -71,10 +71,10 @@ data.insert(loc=0, column='fecha',
 
 url = 'https://climatologia.meteochile.gob.cl/application/informacion/buscadorDeEstaciones/'
 req = requests.get(url)
-soup = BeautifulSoup(req.text, 'html_parser')
+soup = BeautifulSoup(req.text, "html.parser")
 
 
-
+soup
 
 
 
